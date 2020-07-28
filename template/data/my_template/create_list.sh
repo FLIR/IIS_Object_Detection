@@ -1,12 +1,13 @@
 #!/bin/bash
 
-#data_root_dir=$HOME/dixu/Datasets/QRData  # You may need to modify this. Set it to your $DATA_ROOT_DIR
-#dataset_name="augmented"
-#CAFFE_ROOT=$HOME/dixu/Projects/caffe_root
-#IMAGE_FORMAT='.png'  #'.jpg'
+data_root_dir=$1 
+dataset_name=$2 
+IMAGE_FORMAT=$3 
+script_folder_name=$4
 
 sub_dir=ImageSets/Main
-bash_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+#bash_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+bash_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")"/../${script_folder_name} && pwd)"
 for dataset in trainval test
 do
   dst_file=$bash_dir/$dataset.txt
