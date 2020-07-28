@@ -1,7 +1,8 @@
 #!/bin/bash
 #DATA_DIR="$HOME/dixu/Datasets/QRData/augmented"
+DATA_DIR=$1
 FILES="${DATA_DIR}/Images/*${IMAGE_FORMAT}"  #"${DATA_DIR}/Images/*.png"
-#TEST_SET_PERCENTAGE=15  # percentage of all images that goes to test set, the rest will go to trainval set
+TEST_SET_PERCENTAGE=$2  # percentage of all images that goes to test set, the rest will go to trainval set
 
 # create folder if it does not exist
 DATA_PARTATION_FILE_DIR="${DATA_DIR}/ImageSets/Main"
