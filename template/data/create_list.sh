@@ -7,7 +7,7 @@ script_folder_name=$4
 
 sub_dir=ImageSets/Main
 #bash_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-bash_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")"/../${script_folder_name} && pwd)"
+bash_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")"/../../${script_folder_name} && pwd)"
 for dataset in trainval test
 do
   dst_file=$bash_dir/$dataset.txt
