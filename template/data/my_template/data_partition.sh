@@ -11,11 +11,8 @@ mkdir -p $DATA_PARTATION_FILE_DIR
 # create files if do not exist
 FILE=${DATA_PARTATION_FILE_DIR}/trainval.txt
 if test -f "$FILE"; then
-    echo "$FILE exists. Remove it and recreate a new file."
     rm ${DATA_PARTATION_FILE_DIR}/trainval.txt
     rm ${DATA_PARTATION_FILE_DIR}/test.txt
-else 
-    echo "$FILE does not exist."
 fi
 touch ${DATA_PARTATION_FILE_DIR}/trainval.txt
 touch ${DATA_PARTATION_FILE_DIR}/test.txt
