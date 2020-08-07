@@ -3,10 +3,10 @@
 
 ## [1] DATA
 # [1a] Generate labelmap.prototxt file
-FILE_DIR=${script_folder_name}
+FILE_DIR=${PROJECT_NAME}
 echo 'mkdir: ' $FILE_DIR
 mkdir -p $FILE_DIR
-FILE=$FILE_DIR/labelmap.prototxt
+FILE=${FILE_DIR}/labelmap.prototxt
 if test -f "$FILE"; then
     rm $FILE
 fi
@@ -20,7 +20,7 @@ echo "item {
 }" >> $FILE
 # Write the rest of classes
 ind_class=0
-IFS=',' read -ra ADDR <<< "$CLASSES"
+IFS=',' read -ra ADDR <<< "${CLASSES}"
 for i in "${ADDR[@]}"; do
 	ind_class=$((ind_class+1))
 	echo "item {
@@ -47,23 +47,23 @@ echo 'Running data_partition ...'
 
 # [1d] run create_list.sh
 echo 'Running create_list ...'
-./data/create_list.sh $data_root_dir $dataset_name $IMAGE_FORMAT $script_folder_name
+./data/create_list.sh ${data_root_dir} ${dataset_name} ${IMAGE_FORMAT} ${PROJECT_NAME}
 
 
 # [1e] run create_data.sh
 echo 'Running create_list ...'
-./data/create_data.sh ${data_root_dir} ${dataset_name} ${script_folder_name}
+./data/create_data.sh ${data_root_dir} ${dataset_name} ${PROJECT_NAME}
+
 
 
 ## [2] TRAIN 
-
 
 # [2a] Use gen_model.sh to generate your own prototxt files for training and deployment
 cd MobileNet-SSD
 ./gen_model.sh $CLASSNUM 
 
 # [2b] Create a 'qr' folder
-ProjectFolder="../../"${script_folder_name} #"caffe_ssd/qr"
+ProjectFolder="../../"${PROJECT_NAME} 
 
 # [2c] Copy files to the 'ProjectFolder' 
 cp example/* ${ProjectFolder}

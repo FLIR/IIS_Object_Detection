@@ -7,6 +7,6 @@ if test -z $latest; then
 	exit 1
 fi
 #$CAFFE_ROOT/build/tools/caffe train -solver="solver_test.prototxt" \
-$CAFFE_DIR/caffe train -solver="solver_test.prototxt" \
+${CAFFE_DIR}/caffe train -solver="solver_test.prototxt" \
 --weights=$latest \
 -gpu 0
