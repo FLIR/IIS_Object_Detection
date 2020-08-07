@@ -37,7 +37,7 @@ cd /opt/caffe && make runtest
 This provides an overview of your file structure expectations. Place your files in the following fashion to work with the scripts provided in this tutorial. 
 
 Below is the expected dataset structure.
-
+```bash
 DATASETS     
 └── your_dataset
    ├── original
@@ -85,10 +85,10 @@ DATASETS
            └── test_lmdb 
                 ├── data.mdb
                 └── lock.mdb
-
+```
 
 Below is the structure of the data preparation and training scripts. 
-
+```bash
 caffe_ssd     
 ├── README.md
 ├── project.config
@@ -116,7 +116,7 @@ caffe_ssd
    ├── solver_test.prototxt
    ├── train.sh
    └── test.sh 
-
+```
 
 ## Train Your Own Model
 ### Download Training Scripts
