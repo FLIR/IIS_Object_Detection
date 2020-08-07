@@ -18,7 +18,7 @@ docker build -f caffe-ssd.dockerfile -t caffe-ssd/opencv3.4:latest-devel-cuda8-c
 Run Docker Environment
 Run docker container using the caffe-ssd image as follows
 
-docker run --gpus all -it --rm --name caffe-ssd-opencv3-latest-ch  --privileged --shm-size=2g --ulimit memlock=-1 --ulimit stack=67108864 -v /dev:/dev -v /home/research/chase:/home/docker/chase -e DISPLAY=${DISPLAY} caffe-ssd/opencv3.4:latest-devel-cuda8-cudnn7-py3.5-ubuntu16.04-ch
+`docker run --gpus all -it --rm --name caffe-ssd-opencv3-latest-ch  --privileged --shm-size=2g --ulimit memlock=-1 --ulimit stack=67108864 -v /dev:/dev -v /home/research/chase:/home/docker/chase -e DISPLAY=${DISPLAY} caffe-ssd/opencv3.4:latest-devel-cuda8-cudnn7-py3.5-ubuntu16.04-ch`
 
 Confirm correct caffe-ssd build by running the following command inside the caffe-ssd docker container enviroment.
 cd /opt/caffe && make runtest
