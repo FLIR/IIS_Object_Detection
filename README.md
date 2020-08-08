@@ -24,7 +24,11 @@ docker build -f caffe-ssd.dockerfile -t caffe-ssd/opencv3.4:latest-devel-cuda8-c
 Run docker container using the caffe-ssd image as follows
 
 ```bash
-docker run --gpus all -it --rm --name caffe-ssd-opencv3-latest-ch  --privileged --shm-size=2g --ulimit memlock=-1 --ulimit stack=67108864 -v /dev:/dev -v /home/research/YourFolder:/home/docker/YourFolder -e DISPLAY=${DISPLAY} caffe-ssd/opencv3.4:latest-devel-cuda8-cudnn7-py3.5-ubuntu16.04-ch
+docker run --gpus all -it --rm --name caffe-ssd-opencv3-latest-ch  \
+--privileged --shm-size=2g --ulimit memlock=-1 --ulimit stack=67108864 \
+-v /dev:/dev \
+-v /home/research/YourFolder:/home/docker/YourFolder \
+-e DISPLAY=${DISPLAY} caffe-ssd/opencv3.4:latest-devel-cuda8-cudnn7-py3.5-ubuntu16.04-ch
 ```
 
 Confirm correct caffe-ssd build by running the following command inside the caffe-ssd docker container enviroment.
@@ -151,9 +155,25 @@ The script 'run.sh' generates LMDB files and calls 'train.sh' for training your 
 The training can be terminated early if the loss is at a satisfactory level and has stopped decreasing. The latest model weight will be saved.
 
 ### Test
-Test your trained model and evaluate the result. [Optional]
+Test your trained model and evaluate the result. 
 ```bash
 cd caffe_ssd/${PROJECT_NAME}
 ./test.sh
 ```
 Test mAP was reported to be 100%.
+
+
+## Deploy 
+Trained model saved under `snapshot/` directory..
+
+After we trained our model, we use NeuroUtility to convert the model to Firefly DL format, and upload it to a Firefly DL camera. 
+
+### Inference on camera
+Prepare a label file (label.txt) with two lines of content:
+```
+background
+QR
+```
+The label file can be found at: "W:\DiXu\deep_learning\Datasets\QRData\model\labels_qr.txt".
+
+Right click SpinView, select "Configure Inference Label", and Browse to the label file, click "Apply". Now, enable inference, and stream the camera. You should be able to have Firefly-DL camera localizing QR code now. 
