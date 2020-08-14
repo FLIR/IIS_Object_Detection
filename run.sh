@@ -51,7 +51,7 @@ echo 'Running create_list ...'
 
 
 # [1e] run create_data.sh
-echo 'Running create_list ...'
+echo 'Running create_data ...'
 ./data/create_data.sh ${data_root_dir} ${dataset_name} ${PROJECT_NAME}
 
 
