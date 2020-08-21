@@ -5,7 +5,7 @@ dataset_name=$2
 IMAGE_FORMAT=$3 
 script_folder_name=$4
 
-CAFFE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")"../caffe_root && pwd)"
+CAFFE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")"/../caffe_root && pwd)"
 sub_dir=ImageSets/Main
 #bash_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 bash_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")"/../../${script_folder_name} && pwd)"
