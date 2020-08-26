@@ -12,23 +12,22 @@ In this tutorial, we use Docker to build the Caffe-ssd environment. However, you
 ### Build Docker Image
 Build a docker image with Caffe-SSD, Opencv-3.4, and CUDA-8 GPU drive support.
 
-* Download the docker.zip file from [here](https://confluencecommercial.flir.com/display/IISRT/Installation+guide+for+Docker-ce%2C+Cuda+and+Nvidia-drivers).
-This contains the caffe-ssd.dockerfile and Makefile.config files.
+The Docker folder contains the caffe-ssd.dockerfile script and Makefile.config file.
 * Run the docker build command and note the following:
-Run the docker build command inside the same directory as the caffe-ssd.dockerfile and Makefile.config files.
+Run the docker build command inside the `docker/` directory, where the caffe-ssd.dockerfile and Makefile.config files located.
 ```bash
-docker build -f caffe-ssd.dockerfile -t caffe-ssd/opencv3.4:latest-devel-cuda8-cudnn7-py3.5-ubuntu16.04-ch .
+docker build -f caffe-ssd.dockerfile -t caffe-ssd/opencv3.4:latest-devel-cuda8-cudnn7-py3.5-ubuntu16.04 .
 ```
 
 ### Run Docker Environment
 Run docker container using the caffe-ssd image as follows
 
 ```bash
-docker run --gpus all -it --rm --name caffe-ssd-opencv3-latest-ch  \
+docker run --gpus all -it --rm --name caffe-ssd-opencv3-latest  \
 --privileged --shm-size=2g --ulimit memlock=-1 --ulimit stack=67108864 \
 -v /dev:/dev \
 -v /home/research/YourFolder:/home/docker/YourFolder \
--e DISPLAY=${DISPLAY} caffe-ssd/opencv3.4:latest-devel-cuda8-cudnn7-py3.5-ubuntu16.04-ch
+-e DISPLAY=${DISPLAY} caffe-ssd/opencv3.4:latest-devel-cuda8-cudnn7-py3.5-ubuntu16.04
 ```
 
 Confirm correct caffe-ssd build by running the following command inside the caffe-ssd docker container enviroment.
