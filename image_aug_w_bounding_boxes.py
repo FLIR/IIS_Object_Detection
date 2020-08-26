@@ -144,6 +144,15 @@ def main(FLAGS):
 	img_input_dir = FLAGS.input_image_dir
 	xml_input_dir = FLAGS.input_bbox_dir
 
+	if not os.path.exists(img_input_dir):
+		raise Exception("Input image directory (.png) not correctly provided")
+
+	if not os.path.exists(xml_input_dir):
+		raise Exception("Input annotation directory (.xml) directory not correctly provided")
+
+	# TODO: Add file check, if no images or wrong format image.
+	print('input image dir, input annotation dir', img_input_dir, xml_input_dir)
+
 	img_output_dir = FLAGS.output_image_dir
 	Path(img_output_dir).mkdir(parents=True, exist_ok=True)
 
@@ -152,6 +161,7 @@ def main(FLAGS):
 
 	for root, dirs, files in os.walk(img_input_dir):
 		for file in files:
+			# print(file)
 			if file.endswith('.png'):
 				print('Applying agumation on image file', file)
 				img_file_path = os.path.join(root, file)
@@ -179,13 +189,13 @@ if __name__ == '__main__':
 	parser.add_argument(
 	     '--output_image_dir',
 	     type=str,
-	     default=os.getcwd()+'/augmented/JPEGImages/',
+	     default='augmented/Images/',
 	     help='Output augmented image (.png) directory.'
 	)
 	parser.add_argument(
 	     '--output_bbox_dir',
 	     type=str,
-	     default=os.getcwd()+'/augmented/Annotations/',
+	     default='augmented/Annotations/',
 	     help="Output augmented bounding boxs (.xml) directory."
 	)
 
