@@ -5,7 +5,7 @@ script_folder_name=$3 #"qr"
 cur_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")"/../../${script_folder_name} && pwd)"
 #root_dir=$cur_dir/../..
 #CAFFE_ROOT=$HOME/dixu/Projects/caffe_root  # This has compiled caffe library. Is part of docker configuration     
-CAFFE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")"/../caffe_root && pwd)"
+CAFFE_ROOT=$4
 
 
 #cd $root_dir
