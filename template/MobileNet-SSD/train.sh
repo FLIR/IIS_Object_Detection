@@ -1,7 +1,7 @@
 #!/bin/sh
 #CAFFE_ROOT="$HOME/dixu/Projects/caffe_root"
 #CAFFE_ROOT="$HOME/dixu/Projects/caffe_ssd/template/caffe_root"
-CAFFE_ROOT=$1
+#CAFFE_ROOT=$1
 
 
 if ! test -f MobileNetSSD_train.prototxt ;then
