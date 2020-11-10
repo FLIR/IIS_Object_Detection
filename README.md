@@ -168,11 +168,11 @@ Trained model saved under `snapshot/` directory..
 After we trained our model, we use NeuroUtility to convert the model to Firefly DL format, and upload it to a Firefly DL camera. 
 
 ### Inference on camera
-Prepare a label file (label.txt) with two lines of content:
+Prepare a label file with two lines of content:
 ```
 background
 QR
 ```
-The label file can be found at: "W:\DiXu\deep_learning\Datasets\QRData\model\labels_qr.txt".
+The label file can be found at: "IIS_Object_Detection/template/labels_qr.txt".
 
 Right click SpinView, select "Configure Inference Label", and Browse to the label file, click "Apply". Now, enable inference, and stream the camera. You should be able to have Firefly-DL camera localizing QR code now. 
