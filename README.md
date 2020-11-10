@@ -92,7 +92,7 @@ DATASETS
 
 Below is the structure of the data preparation and training scripts. 
 ```bash
-caffe_ssd     
+IIS_Object_Detection     
 ├── README.md
 ├── project.config
 ├── run.sh
@@ -126,21 +126,21 @@ caffe_ssd
 Download MobileNet-SSD training scripts, including the pretrained model weights, from the FLIR repo here.  These scripts are modified based on the original [MobileNet-SSD repo](https://github.com/chuanqi305/MobileNet-SSD). 
 
 ```bash
-git clone https://bitbucketcommercial.flir.com/scm/rdl/caffe_ssd.git
+git clone https://github.com/FLIR/IIS_Object_Detection.git
 ```
-A 'MobileNet-SSD' folder is included under 'caffe_ssd/template/' with the code from the original MobileNet-SSD repo for testing and retraining. 
+A 'MobileNet-SSD' folder is included under 'IIS_Object_Detection/template/' with the code from the original MobileNet-SSD repo for testing and retraining. 
 
 ### Train
 Lightning Memory-Mapped Database (LMDB) is a software library that provides a high-performance embedded transactional database in the form of a key-value store.
 
-#### Define configuration file in "caffe_ssd/project.config"
-First, `cd caffe_ssd`. Modify project.config file for your project.  
+#### Define configuration file in "IIS_Object_Detection/project.config"
+First, `cd IIS_Object_Detection`. Modify project.config file for your project.  
 
 ```bash
 DATA_DIR="DATASETS/your_dataset/augmentated"  # Your input data folder.
 IMAGE_FORMAT='.png'     # Only one image format is allowed for all images. Please convert your images into the same format, i.e., one of 'jpg', 'png', and 'bmp' format.
 TEST_SET_PERCENTAGE=15  # Percentage of all images that goes to test set, the rest will go to trainval set.
-PROJECT_NAME="qr"       # A new folder with this name will be created under caffe_ssd/.
+PROJECT_NAME="qr"       # A new folder with this name will be created under IIS_Object_Detection/.
 CLASSNUM=2              # The number of classes in your dataset. It is also reflected in "labelmap.prototxt" # In the case of the QR code example, there are 2 classes, background and QR. So CLASSNUM is 2.
 CLASSES="QR"            # Comma separated class names, Do not need to include the background class.
 ```
@@ -150,13 +150,13 @@ CLASSES="QR"            # Comma separated class names, Do not need to include th
 ```bash
 ./run.sh
 ```
-The script 'run.sh' generates LMDB files and calls 'train.sh' for training your own model. The training output files (*_iter_*.caffemodel, *_iter_*.solverstate) are saved under "caffe_ssd/${script_folder_name}/snapshot" directory.
+The script 'run.sh' generates LMDB files and calls 'train.sh' for training your own model. The training output files (*_iter_*.caffemodel, *_iter_*.solverstate) are saved under "IIS_Object_Detection/${script_folder_name}/snapshot" directory.
 The training can be terminated early if the loss is at a satisfactory level and has stopped decreasing. The latest model weight will be saved.
 
 ### Test
 Test your trained model and evaluate the result. 
 ```bash
-cd caffe_ssd/${PROJECT_NAME}
+cd IIS_Object_Detection/${PROJECT_NAME}
 ./test.sh
 ```
 Test mAP was reported to be 100%.
