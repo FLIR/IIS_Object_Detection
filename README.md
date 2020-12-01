@@ -2,30 +2,34 @@
 
 An example on training a QR-code detector is provided [here](https://confluencecommercial.flir.com/display/IISRT/%5BSimplified%5D+QR+Code+Localization+Development+Process) to illustrate the development process.
 
-## Training Environment Setup
-**[Optional:] If you have Caffe-SSD with GPU (CUDA) installed in your Linux machine you can skip the following steps and go directly to File Structure in section 5.**
+## Environment Setup
 
-Here, we use caffe framework to train the object detection model. You will need to have the Caffe-SSD environment setup on you device. Please make you have the environment setup before proceeding. 
-
-In this tutorial, we use Docker to build the Caffe-ssd environment. However, you will need to install Docker with GPU support (Cuda) before you can build the docker image. You can find a helpful procedure to install Docker/Cuda on Ubuntu-18.04 OS [here](https://confluencecommercial.flir.com/display/IISRT/Installation+guide+for+Docker-ce%2C+Cuda+and+Nvidia-drivers).
+We use caffe framework to train the object detection model. You will need to have the Caffe-SSD environment setup on you device. Please make you have the environment setup before proceeding. 
 
 ### Run Docker Environment
-Build a docker image with Caffe-SSD, Opencv-3.4, and CUDA-8 GPU drive support.
+**This section is optional:**
+**If you have Caffe-SSD with GPU (CUDA) installed in your Linux machine you can skip the following steps and go directly to File Structure in section 5.**
 
-The Docker folder contains the caffe-ssd.dockerfile script and Makefile.config file.
+We use Docker to build the Caffe-ssd environment. However, you will need to install Docker with GPU support (Cuda) before you can build the docker image. You can find a helpful procedure to install Docker/Cuda on Ubuntu-18.04 OS [here](https://confluencecommercial.flir.com/display/IISRT/Installation+guide+for+Docker-ce%2C+Cuda+and+Nvidia-drivers).
 
+
+This command will pull the docker caffe-ssd image `asigiuk/caffe-ssd_devel:latest` and run a docker container with the following environment settings:
+  - Caffe-SSD
+  - Opencv-3.4.3
+  - CUDA-8/CUDNN-7 GPU drive support.
 
 ```bash
 cd docker/
-docker run --gpus all --rm -it --name caffe-env-1  -e DISPLAY=${DISPLAY}  --net=host  --privileged --shm-size=2g --ulimit memlock=-1 --ulimit stack=67108864  -v /dev:/dev -v path/to/host_target_directory:/home/docker/projects asigiuk/caffe-ssd_devel:latest
+docker run --gpus all --rm -it --name caffe-env-1  -e DISPLAY=${DISPLAY}  --net=host  --privileged --shm-size=2g --ulimit memlock=-1 --ulimit stack=67108864  -v /dev:/dev -v path/to/host_target_directory:/home/docker asigiuk/caffe-ssd_devel:latest
 ```
 
 Important Notes:
 1. Execute the `docker run` command under the `docker/` directory in this repository. You should find the following files inside this directory: caffe -ssd.dockerfile and Makefile.config.
-2. Modify `-v path/to/host_target_directory:/home/docker` in the above command and replace `path/to/host_target_directory` with the host machine target directory. This will mount specified host direcotry to the docker container home direcotry `/home/docker`.
-3. Confirm that the container has access to training images (add another volume mount) or are under in the specified target host directory. The docker `-v` or `--volume` flag is used to mount a target directory (and all sub-directories) in your host machine to the docker container. You can find more information regarding the `docker run` command [here](https://docs.docker.com/engine/reference/commandline/run/#mount-volume--v---read-only)  
+2. Modify `-v path/to/host_target_directory:/home/docker` in the above command and replace `path/to/host_target_directory` with your host machine target directory path. This will mount specified your target host directory to the docker container home directory `/home/docker`.
+3. Confirm that the container has access to the training images by saving the images under the your specified target host directory. Alternatively, you can add another volume mount argument to the `docker run` command .
+4. The docker `-v` or `--volume` flag is used to mount a target directory in your host machine (i.e. `path/to/host_target_directory`) to the docker container directory (i.e. `/home/docker`) . You can find more information regarding the `docker run` command [here](https://docs.docker.com/engine/reference/commandline/run/#mount-volume--v---read-only)  
 
-Confirm correct caffe-ssd build by running the following command inside the caffe-ssd docker container enviroment.
+Confirm correct caffe-ssd build by running the following command inside the caffe-ssd docker container environment.
 ```bash
 make /opt/caffe/runtest
 ```
