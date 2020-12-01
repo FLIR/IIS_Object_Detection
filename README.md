@@ -1,43 +1,47 @@
 # This includes the CAFFE SSD-Mobilenet scripts for training customized applications
 
-An example on training a QR-code detector is provided [here](https://confluencecommercial.flir.com/display/IISRT/%5BSimplified%5D+QR+Code+Localization+Development+Process) to illustrate the development process. 
+An example on training a QR-code detector is provided [here](https://confluencecommercial.flir.com/display/IISRT/%5BSimplified%5D+QR+Code+Localization+Development+Process) to illustrate the development process.
 
-## Training Environment Setup
-**[Optional:] If you have Caffe-SSD with GPU (CUDA) installed in your Linux machine you can skip the following steps and go directly to File Structure in section 5.**
+## Environment Setup
 
-Here, we use caffe framework to train the object detection model. You will need to have the Caffe-SSD environment setup on you device. Please make you have the environment setup before proceeding. 
-
-In this tutorial, we use Docker to build the Caffe-ssd environment. However, you will need to install Docker with GPU support (Cuda) before you can build a docker image. You can find a helpful procedure to install Docker/Cuda on Ubuntu-18.04 OS [here](https://confluencecommercial.flir.com/display/IISRT/Installation+guide+for+Docker-ce%2C+Cuda+and+Nvidia-drivers).
-
-### Build Docker Image
-Build a docker image with Caffe-SSD, Opencv-3.4, and CUDA-8 GPU drive support.
-
-The Docker folder contains the caffe-ssd.dockerfile script and Makefile.config file.
-* Run the docker build command and note the following:
-Run the docker build command inside the `docker/` directory, where the caffe-ssd.dockerfile and Makefile.config files located.
-```bash
-docker build -f caffe-ssd.dockerfile -t caffe-ssd/opencv3.4:latest-devel-cuda8-cudnn7-py3.5-ubuntu16.04 .
-```
+We use caffe framework to train the object detection model. You will need to have the Caffe-SSD environment setup on you device. Please make you have the environment setup before proceeding. 
 
 ### Run Docker Environment
-Run docker container using the caffe-ssd image as follows
+**This section is optional:**
+**If you have Caffe-SSD with GPU (CUDA) installed in your Ubuntu machine you can skip the following steps and go directly to File Structure in section 5.**
+
+We use Docker to build the Caffe-ssd environment. However, you will need to install Docker with GPU support (Cuda) before you can build the docker image. You can find a helpful procedure to install Docker/Cuda on Ubuntu-18.04 OS [here](https://confluencecommercial.flir.com/display/IISRT/Installation+guide+for+Docker-ce%2C+Cuda+and+Nvidia-drivers).
+
+We tested the environment with the following host machine setup:
+- Ubuntu 18.04.
+- Cuda 10.0/Cudnn 7.
+- Docker-ce 19.03.12.
+- Nvidia GeForce GTX 1080 GPU.
+
+This command will pull the docker caffe-ssd image `asigiuk/caffe-ssd_devel:latest` and run a docker container with the following environment settings:
+  - Caffe-SSD
+  - Opencv-3.4.3
+  - CUDA-8/CUDNN-7 GPU drive support.
 
 ```bash
-docker run --gpus all -it --rm --name caffe-ssd-opencv3-latest  \
---privileged --shm-size=2g --ulimit memlock=-1 --ulimit stack=67108864 \
--v /dev:/dev \
--v /home/research/YourFolder:/home/docker/YourFolder \
--e DISPLAY=${DISPLAY} caffe-ssd/opencv3.4:latest-devel-cuda8-cudnn7-py3.5-ubuntu16.04
+cd docker/
+docker run --gpus all --rm -it --name caffe-env-1  -e DISPLAY=${DISPLAY}  --net=host  --privileged --shm-size=2g --ulimit memlock=-1 --ulimit stack=67108864  -v /dev:/dev -v path/to/host_target_directory:/home/docker asigiuk/caffe-ssd_devel:latest
 ```
 
-Confirm correct caffe-ssd build by running the following command inside the caffe-ssd docker container enviroment.
+Important Notes:
+1. Execute the `docker run` command under the `docker/` directory in this repository. You should find the following files inside this directory: caffe -ssd.dockerfile and Makefile.config.
+2. Modify `-v path/to/host_target_directory:/home/docker` in the above command and replace `path/to/host_target_directory` with your host machine target directory path. This will mount specified your target host directory to the docker container home directory `/home/docker`.
+3. Confirm that the container has access to the training images by saving the images under the your specified target host directory. Alternatively, you can add another volume mount argument to the `docker run` command .
+4. The docker `-v` or `--volume` flag is used to mount a target directory in your host machine (i.e. `path/to/host_target_directory`) to the docker container directory (i.e. `/home/docker`) . You can find more information regarding the `docker run` command [here](https://docs.docker.com/engine/reference/commandline/run/#mount-volume--v---read-only)  
+
+Confirm correct caffe-ssd build by running the following command inside the caffe-ssd docker container environment.
 ```bash
-cd /opt/caffe && make runtest
+make /opt/caffe/runtest
 ```
 
 
 ## File Structure
-This provides an overview of your file structure expectations. Place your files in the following fashion to work with the scripts provided in this tutorial. 
+This provides an overview of your file structure expectations. Place your files in the following fashion to work with the scripts provided in this tutorial.
 
 Below is the expected dataset structure.
 ```bash
@@ -85,12 +89,12 @@ DATASETS
            ├── trainval_lmdb
            │   ├── data.mdb
            │   └── lock.mdb
-           └── test_lmdb 
+           └── test_lmdb
                 ├── data.mdb
                 └── lock.mdb
 ```
 
-Below is the structure of the data preparation and training scripts. 
+Below is the structure of the data preparation and training scripts.
 ```bash
 IIS_Object_Detection     
 ├── README.md
@@ -101,7 +105,7 @@ IIS_Object_Detection
 │  │  ├── data_partition.sh
 │  │  ├── create_list.sh
 │  │  └── create_data.sh
-│  └── MobileNet-SSD 
+│  └── MobileNet-SSD
 │      ├── mobilenet_iter_73000.caffemodel
 │      ├── gen.py   
 │       :
@@ -118,16 +122,17 @@ IIS_Object_Detection
    ├── solver_train.prototxt
    ├── solver_test.prototxt
    ├── train.sh
-   └── test.sh 
+   └── test.sh
 ```
 
 ## Train Your Own Model
 ### Download Training Scripts
-Download MobileNet-SSD training scripts, including the pretrained model weights, from the FLIR repo here.  These scripts are modified based on the original [MobileNet-SSD repo](https://github.com/chuanqi305/MobileNet-SSD). 
+Download MobileNet-SSD training scripts, including the pretrained model weights, from the FLIR repo here.  These scripts are modified based on the original [MobileNet-SSD repo](https://github.com/chuanqi305/MobileNet-SSD).
 
 ```bash
 git clone https://github.com/FLIR/IIS_Object_Detection.git
 ```
+
 A 'MobileNet-SSD' folder is included under 'IIS_Object_Detection/template/' with the code from the original MobileNet-SSD repo for testing and retraining. 
 
 ### Train
@@ -154,7 +159,7 @@ The script 'run.sh' generates LMDB files and calls 'train.sh' for training your 
 The training can be terminated early if the loss is at a satisfactory level and has stopped decreasing. The latest model weight will be saved.
 
 ### Test
-Test your trained model and evaluate the result. 
+Test your trained model and evaluate the result.
 ```bash
 cd IIS_Object_Detection/${PROJECT_NAME}
 ./test.sh
@@ -162,10 +167,10 @@ cd IIS_Object_Detection/${PROJECT_NAME}
 Test mAP was reported to be 100%.
 
 
-## Deploy 
+## Deploy
 Trained model saved under `snapshot/` directory..
 
-After we trained our model, we use NeuroUtility to convert the model to Firefly DL format, and upload it to a Firefly DL camera. 
+After we trained our model, we use NeuroUtility to convert the model to Firefly DL format, and upload it to a Firefly DL camera.
 
 ### Inference on camera
 Prepare a label file with two lines of content:
@@ -175,4 +180,4 @@ QR
 ```
 The label file can be found at: "IIS_Object_Detection/template/labels_qr.txt".
 
-Right click SpinView, select "Configure Inference Label", and Browse to the label file, click "Apply". Now, enable inference, and stream the camera. You should be able to have Firefly-DL camera localizing QR code now. 
+Right click SpinView, select "Configure Inference Label", and Browse to the label file, click "Apply". Now, enable inference, and stream the camera. You should be able to have Firefly-DL camera localizing QR code now.

@@ -20,7 +20,7 @@ RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selectio
 
 # Install sudo and add user to sudo group
 RUN apt-get update
-RUN apt-get --allow-insecure-repositories --fix-missing update 
+RUN apt-get --allow-insecure-repositories --fix-missing update
 
 
 RUN apt-get install -y -q \
@@ -32,12 +32,12 @@ RUN apt-get install -y -q \
     pkg-config \
     nano vim\
     sudo \
-    python-scipy 
+    python-scipy
 
-# add sudo user 
+# add sudo user
 RUN  adduser ${USER} sudo
 
-## Python libraries 
+## Python libraries
 # TODO: upgrade from python 3.5 to python 3.7.
 
 RUN add-apt-repository ppa:deadsnakes/ppa
@@ -52,7 +52,7 @@ RUN wget --no-check-certificate  https://bootstrap.pypa.io/get-pip.py
 RUN python get-pip.py && pip install numpy scipy
 RUN python3 get-pip.py && pip3 install numpy scipy
 RUN pip install --upgrade google-api-python-client
-RUN pip install scikit-image 
+RUN pip install scikit-image
 
 
 # gflags, glog, protobuf, hdf5, protobuf
@@ -60,7 +60,7 @@ RUN apt-get install -y -q libgflags-dev libgoogle-glog-dev protobuf-compiler lib
 
 
 #optional dependencies Image I/O libs
-RUN apt-get install -y -q  libpng-dev libjpeg-dev libopenexr-dev libtiff-dev libwebp-dev 
+RUN apt-get install -y -q  libpng-dev libjpeg-dev libopenexr-dev libtiff-dev libwebp-dev
 
 
 # Parallelism library C++ for CPU
@@ -69,7 +69,7 @@ RUN apt-get install -y -q libtbb2 libtbb-dev
 #Optimization libraries for OpenCV
 RUN apt-get install -y -q libatlas-base-dev gfortran
 
-#Optional libraries: 
+#Optional libraries:
 RUN apt-get install -y -q libgphoto2-dev libeigen3-dev doxygen
 
 ## Required libraries for Caffe
@@ -80,7 +80,7 @@ RUN apt-get install -y -q libgtk-3-dev
 
 RUN apt-get update
 
-# lmdb, opencv, and hdf5 
+# lmdb, opencv, and hdf5
 RUN apt-get install -y -q liblmdb-dev libopencv-dev libhdf5-serial-dev libhdf5-dev
 
 # boost, blas, leveldb, snappy
@@ -93,7 +93,7 @@ RUN apt-get install -y -q libboost-all-dev libblas-dev libatlas-base-dev libopen
 WORKDIR /opt
 
 # set build arguments
-ARG CLONE_TAG=3.4
+ARG CLONE_TAG=3.4.3
 ARG OPENCV_TEST_DATA_PATH=/opt/opencv_extra/testdata
 
 # opencv extra test dataset
@@ -101,7 +101,7 @@ RUN git clone -b ${CLONE_TAG} --depth 1 https://github.com/opencv/opencv_extra.g
 # contrib repo
 RUN git clone -b ${CLONE_TAG} --depth 1 https://github.com/opencv/opencv_contrib.git
 # opencv repo
-RUN git clone -b ${CLONE_TAG} --depth 1 https://github.com/opencv/opencv.git 
+RUN git clone -b ${CLONE_TAG} --depth 1 https://github.com/opencv/opencv.git
 
 # set env and working directory to opencv root
 ENV OPENCV_TEST_DATA_PATH=/opt/opencv_extra/testdata/
@@ -164,9 +164,9 @@ COPY Makefile.config $CAFFE_ROOT
 
 # Build and test caffe
 RUN make all && make test
-# RUN make runtest # Recommend run inside enviroment. This failes during build but passes inside env in current version of dockerfile. 
+# RUN make runtest # Recommend run inside enviroment. This failes during build but passes inside env in current version of dockerfile.
 
-# Build python-caffe api 
+# Build python-caffe api
 RUN cp build/lib/libcaffe.so* /usr/lib
 RUN make pycaffe
 RUN cp -r python/caffe/ /usr/local/lib/python3.5/dist-packages/
