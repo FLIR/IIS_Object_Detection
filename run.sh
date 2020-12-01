@@ -47,12 +47,12 @@ echo 'Running data_partition ...'
 
 # [1d] run create_list.sh
 echo 'Running create_list ...'
-./data/create_list.sh ${data_root_dir} ${dataset_name} ${IMAGE_FORMAT} ${PROJECT_NAME} ${CAFFE_ROOT}
+./data/create_list.sh ${data_root_dir} ${dataset_name} ${IMAGE_FORMAT} ${PROJECT_NAME} #${CAFFE_ROOT}
 
 
 # [1e] run create_data.sh
 echo 'Running create_data ...'
-./data/create_data.sh ${data_root_dir} ${dataset_name} ${PROJECT_NAME} ${CAFFE_ROOT}
+./data/create_data.sh ${data_root_dir} ${dataset_name} ${PROJECT_NAME} #${CAFFE_ROOT}
 
 
 
