@@ -8,10 +8,15 @@ We use caffe framework to train the object detection model. You will need to hav
 
 ### Run Docker Environment
 **This section is optional:**
-**If you have Caffe-SSD with GPU (CUDA) installed in your Linux machine you can skip the following steps and go directly to File Structure in section 5.**
+**If you have Caffe-SSD with GPU (CUDA) installed in your Ubuntu machine you can skip the following steps and go directly to File Structure in section 5.**
 
 We use Docker to build the Caffe-ssd environment. However, you will need to install Docker with GPU support (Cuda) before you can build the docker image. You can find a helpful procedure to install Docker/Cuda on Ubuntu-18.04 OS [here](https://confluencecommercial.flir.com/display/IISRT/Installation+guide+for+Docker-ce%2C+Cuda+and+Nvidia-drivers).
 
+We tested the environment with the following host machine setup:
+- Ubuntu 18.04.
+- Cuda 10.0/Cudnn 7.
+- Docker-ce 19.03.12.
+- Nvidia GeForce GTX 1080 GPU.
 
 This command will pull the docker caffe-ssd image `asigiuk/caffe-ssd_devel:latest` and run a docker container with the following environment settings:
   - Caffe-SSD
