@@ -264,13 +264,3 @@ The label file can be found at: "IIS_Object_Detection/template/\<label_file\>.tx
 
 Right click SpinView, select "Configure Inference Label", and Browse to the label file, click "Apply". Now, enable inference, and stream the camera. You should be able to have Firefly-DL camera localizing QR code now.
 
-### AppendingNewData (Highly Experimental)
-If you wish to add additional data/images or classes. We will need to put it into another folder similar to how the first set was setup then create a new config (or copy the old one) and point the image and annotations folder to the new location. Then run
-
-```bash
-python AppendNewData.py <old_config> <new_config>
-```
-
-this will remove the old lmdb and add new images to the trainval and test set then rebuild the lmdb and the prototxt files to accomodate the change in the number of classes and images.
-
-this is Highly Experimental atm and should only be used in a very specific way 
