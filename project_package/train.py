@@ -30,9 +30,10 @@ def start_training(config: Config):
     config.dump_json_to_file("{}-{}.config".format(config.PROJECT_NAME, config.CAFFE_EXECUTION_COUNT))
     executable = config.PATH_TO_CAFFE_DOT_EXE
     pretrained_model = os.path.join(config.ABSOLUTE_PATH_NETWORK, config.PRETRAINED_NETWORK_FILE)
+    config.update_max_iterations()
+    config.update_batch_size()
     execution_args = ["train", "-solver=solver_train.prototxt", "-weights={}".format(pretrained_model)]
     run(executable, execution_args)
-    pass
 
 
 def resume_training(config: Config):
@@ -42,7 +43,6 @@ def resume_training(config: Config):
     executable = config.PATH_TO_CAFFE_DOT_EXE
     execution_args = ["train", "-solver=solver_train.prototxt", "-snapshot={}".format(get_latest_snapshot())]
     run(executable, execution_args)
-    pass
 
 
 if __name__ == '__main__':
@@ -55,5 +55,8 @@ if __name__ == '__main__':
             start_training(config)
 
     else:
-        print("Usage: {} <config_file>")
-        pass
+        config = Config.get_latest_config()
+        if config.CONTINUE_TRAINING:
+            resume_training(config)
+        else:
+            start_training(config)

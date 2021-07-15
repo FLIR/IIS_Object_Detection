@@ -36,5 +36,6 @@ if __name__ == '__main__':
         test_latest_snapshot(config)
 
     else:
-        print("Usage: {} <config_file>")
+        config = Config.get_latest_config()
+        test_latest_snapshot(config)
         pass

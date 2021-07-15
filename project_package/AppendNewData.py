@@ -3,13 +3,28 @@ import random
 import subprocess
 import shutil
 import sys
-import errno
-from project_package.Config import *
+from Config import *
 
-class Pft(object):
+
+def splitall(path):
+    allparts = []
+    while 1:
+        parts = os.path.split(path)
+        if parts[0] == path:  # sentinel for absolute paths
+            allparts.insert(0, parts[0])
+            break
+        elif parts[1] == path: # sentinel for relative paths
+            allparts.insert(0, parts[1])
+            break
+        else:
+            path = parts[0]
+            allparts.insert(0, parts[1])
+    return allparts
+
+class And(object):
 
     def __init__(self, config: Config):
-        super(Pft, self).__init__()
+        super(And, self).__init__()
         self.config = config
 
     @staticmethod
@@ -23,12 +38,7 @@ class Pft(object):
 
     def generate_labelmap_prototxt_file(self):
         background_class = 'item {\n  name: \"none_of_the_above\"\n  label: 0\n  display_name: \"background\"\n}\n'
-        file_dir = os.path.join(self.config.ABSOLUTE_OUTPUT_PROJECT_PATH, self.config.PROJECT_NAME)
-        label_map_prototxt_file = "{}/labelmap.prototxt".format(file_dir)
-        try:
-            os.makedirs(file_dir)
-        except FileExistsError:
-            print(file_dir, " exists")
+        label_map_prototxt_file = "labelmap.prototxt"
 
         dump_string = ""
         dump_string += background_class
@@ -39,25 +49,6 @@ class Pft(object):
 
         with io.open(label_map_prototxt_file, 'w', newline='\n') as fpwrite:
             fpwrite.write(dump_string)
-
-    def verify_image_and_annotation_folder(self):
-        abs_images_path = os.path.join(self.config.ABSOLUTE_DATASETS_PATH,
-                                       self.config.DATASET_FODLER,
-                                       self.config.DATASET_IDENTIFIER,
-                                       self.config.IMAGE_FOLDER_NAME)
-        abs_annotations_path = os.path.join(self.config.ABSOLUTE_DATASETS_PATH,
-                                            self.config.DATASET_FODLER,
-                                            self.config.DATASET_IDENTIFIER,
-                                            self.config.ANNOTAION_FOLDERNAME)
-
-        number_of_images = len(glob.glob("{}/*{}".format(abs_images_path, self.config.IMAGE_EXTENSION)))
-        number_of_annotations = len(glob.glob("{}/*xml".format(abs_annotations_path)))
-
-        try:
-            assert (number_of_images == number_of_annotations)
-        except AssertionError:
-            print("{} has {} images and \n".format(abs_images_path, number_of_images) +
-                  "{} has {} annotations".format(abs_annotations_path, number_of_annotations))
 
     def partition_data_create_list(self):
         proj_path = os.path.join(self.config.ABSOLUTE_OUTPUT_PROJECT_PATH, self.config.PROJECT_NAME)
@@ -177,7 +168,9 @@ class Pft(object):
 
     def get_annoset_args(self, testtrainval):
         proj_path = os.path.join(self.config.ABSOLUTE_OUTPUT_PROJECT_PATH, self.config.PROJECT_NAME)
+        # get this again
         labelmap_prototxt = os.path.join(proj_path, "labelmap.prototxt")
+        # append to this file
         testtranval_txt = os.path.join(proj_path, "{}.txt".format(testtrainval))
         testtranval_lmdb = os.path.join(proj_path, "{}_lmdb".format(testtrainval))
         dataset_folder = os.path.join(self.config.ABSOLUTE_DATASETS_PATH,
@@ -195,7 +188,7 @@ class Pft(object):
                 "--backend=lmdb",
                 "--shuffle=False",
                 "--check_size=False",
-                "--encode_type={}".format(config.IMAGE_EXTENSION),
+                "--encode_type={}".format(self.config.IMAGE_EXTENSION),
                 "--encoded=True",
                 "--gray=False",
                 "{}".format(dataset_folder),
@@ -215,67 +208,127 @@ class Pft(object):
             for each_class in with_background:
                 fpwrite.write("{}\n".format(each_class))
 
-    def copy_project_package(self, input_config, project_path):
-        outuput_config = os.path.join(project_path, "{}.config".format(config.PROJECT_NAME))
-        shutil.copy2(input_config, outuput_config)
+    @staticmethod
+    def rename_old_image_list_files():
+        number = len(glob.glob("test*txt"))
 
-        project_package_files_and_folder = glob.glob(os.path.join("project_package","*"))
-        for each_file_or_folder in project_package_files_and_folder:
-            destination = os.path.join(project_path, os.path.basename(each_file_or_folder))
-            try:
-                shutil.copytree(each_file_or_folder, destination)
-            except OSError as exc:  # python >2.5
-                if exc.errno == errno.ENOTDIR:
-                    shutil.copy2(each_file_or_folder, destination)
-                else:
-                    raise
+        old_test = "test{}.txt".format(number)
+        old_trainval = "test{}.txt".format(number)
 
+        os.rename("test.txt", old_test)
+        os.rename("trainval.txt", old_trainval)
+        return old_test, old_trainval
 
-        # output_training_file = os.path.join(project_path, "train.py")
-        # output_testing_file = os.path.join(project_path, "test.py")
-        # output_config_py_file = os.path.join(project_path, "Config.py")
-        #
-        # shutil.copy2("train.py", output_training_file)
-        # shutil.copy2("test.py", output_testing_file)
-        # shutil.copy2("Config.py", output_config_py_file)
+    @staticmethod
+    def remove_lmdb_files():
+        os.rmdir("test_lmdb")
+        os.rmdir("trainval_lmdb")
+
+    @staticmethod
+    def merge_two_lists_remove_dupes(new_classes, old_classes):
+        in_new = set(new_classes)
+        in_old = set(old_classes)
+
+        in_new_but_not_in_old = in_new - in_old
+
+        all_classes = old_classes + list(in_new_but_not_in_old)
+
+        return all_classes
+
+    @staticmethod
+    def get_additional_information(old_config, new_config):
+        old_dataset_path = old_config.get_dataset_path()
+        new_dataset_path = new_config.get_dataset_path()
+
+        odp = splitall(old_dataset_path)
+        ndp = splitall(new_dataset_path)
+
+        minlen = min(len(odp), len(ndp))
+
+        same = []
+        weron = 0
+        for x in range(minlen):
+            if odp[x] == ndp[x]:
+                same.append(odp[x])
+            else:
+                weron = x
+                break
+
+        output_concatinated = ""
+
+        for each in same:
+            output_concatinated = os.path.join(output_concatinated, each)
+
+        old_dataset_path_out = ""
+        for x in range(weron, len(odp), 1):
+            print(odp[x])
+            old_dataset_path_out = os.path.join(old_dataset_path_out, odp[x])
+
+        new_dataset_path_out = ""
+        for x in range(weron, len(ndp), 1):
+            new_dataset_path_out = os.path.join(new_dataset_path_out, ndp[x])
+
+        return output_concatinated, old_dataset_path_out, new_dataset_path_out
+
+    @staticmethod
+    def prepend_to_each_line(file, string, destination):
+        with io.open(file, 'r') as source, io.open(destination, 'w',  newline='\n') as dest:
+            for line in source:
+                image, annotation = line.split(' ')
+                dest.write("{}{} {}{}".format(string,image,string,annotation))
+
+    @staticmethod
+    def merge_two_files(file1, file2, outfile):
+        with io.open(file1, 'r') as f1, io.open(file2, 'r') as f2, io.open(outfile, 'w') as out:
+            for line in f1:
+                out.write(line)
+            for line in f2:
+                out.write(line)
+
+    def update_lists(self, new_file, old_file, prepend_to_new, prepend_to_old):
+        temp_new_file = "tmpn"
+        self.prepend_to_each_line(new_file, prepend_to_new, temp_new_file)
+        temp_old_file = "tmpo"
+        self.prepend_to_each_line(old_file, prepend_to_old, temp_old_file)
+        self.merge_two_files(temp_new_file, temp_old_file, new_file)
 
 
 if __name__ == '__main__':
-    if len(sys.argv) > 1:
+    if len(sys.argv) != 2:
         # try:
-        input_config = sys.argv[1]
-        config = Config.read_json_to_config(input_config)
-        config.print_config()
+        config_1 = sys.argv[1]
+        config_2 = sys.argv[2]
+        new_config = Config.read_json_to_config(config_1)
+        old_config = Config.read_json_to_config(config_2)
         # fix the items in the config
-        print("Getting Classes From Annotations")
-        config.get_classes_from_annotations()
-        proj_path = os.path.join(config.ABSOLUTE_OUTPUT_PROJECT_PATH, config.PROJECT_NAME)
-        if ope(proj_path):
-            print("============= {} EXISTS =============".format(proj_path))
-            print("Remove rename the project or remove {}".format(proj_path))
-            raise Exception("{} EXISTS".format(proj_path))
-        else:
-            print("============= {} DNE =============".format(proj_path))
+        new_config.get_classes_from_annotations() # gets the new annotaions
+        old_config.get_classes_from_annotations()
 
-        prepare_for_training = Pft(config)
-        prepare_for_training.generate_labelmap_prototxt_file()
-        test_file, trainval_file = prepare_for_training.partition_data_create_list()
-        prepare_for_training.shuffle_file(trainval_file)
-        abs_dataset_location = os.path.join(config.ABSOLUTE_DATASETS_PATH,
-                                            config.DATASET_FODLER,
-                                            config.DATASET_IDENTIFIER)
+        new_classes = new_config.TEST_CLASSES
+        old_classes = old_config.TEST_CLASSES
 
-        test_name_size = os.path.join(proj_path, "test_name_size.txt")
-        some_arguments = [abs_dataset_location, test_file, test_name_size]
-        # create image size txt
-        prepare_for_training.run(config.PATH_TO_GET_IMAGE_SIZE_DOT_EXE, some_arguments)
-        prepare_for_training.process_prototxt_files()
-        prepare_for_training.copy_additional_prototxt_files()
-        prepare_for_training.create_annoset()
-        prepare_for_training.make_snapshot_folder()
-        prepare_for_training.create_label_file()
-        prepare_for_training.copy_project_package(input_config, proj_path)
+        # the project path will the current path as we're updating the project...
 
+        appendnewdata = And(new_config)
+        appendnewdata.config.TEST_CLASSES = appendnewdata.merge_two_lists_remove_dupes(new_classes, old_classes)
+        # doublecheck where this guy goes
+        appendnewdata.generate_labelmap_prototxt_file()
+        # this part gives you a new list...
+
+        old_test_file, old_trainval_file = appendnewdata.rename_old_image_list_files()
+        new_test_file, new_trainval_file = appendnewdata.partition_data_create_list()
+
+        appendnewdata.shuffle_file(new_trainval_file)
+
+        output_concatinated, old_dataset_path_out, new_dataset_path_out = appendnewdata.get_additional_information(old_config, new_config)
+
+        # this
+        appendnewdata.remove_lmdb_files()
+        appendnewdata.update_lists(new_test_file, old_test_file, new_dataset_path_out, old_dataset_path_out)
+        appendnewdata.update_lists(new_trainval_file, old_trainval_file, new_dataset_path_out, old_dataset_path_out)
+        appendnewdata.create_annoset()
+
+        appendnewdata.create_label_file()
     else:
-        print("Usage: {} <config_file>")
+        print("Usage: {} <new_config_file> <old_config_file>")
         pass
