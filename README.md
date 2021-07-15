@@ -1,12 +1,14 @@
 # This includes the CAFFE SSD-Mobilenet scripts for training customized applications
 
+<!--
 An example on training a QR-code detector is provided [here](https://confluencecommercial.flir.com/display/IISRT/%5BSimplified%5D+QR+Code+Localization+Development+Process) to illustrate the development process.
+-->
 
-## Environment Setup
+### Linux Environment Setup
 
 We use caffe framework to train the object detection model. You will need to have the Caffe-SSD environment setup on you device. Please make you have the environment setup before proceeding. 
 
-### Windows Setup
+### Windows Environment Setup
 
 [eric612](https://github.com/eric612/MobileNet-SSD-windows) has an extensive guide to install caffe for Windows, we will need the executables built there for preparing for Training and Training
 
@@ -22,34 +24,36 @@ cmd # if youre on powershell
 git clone https://github.com/dmchong/MobileNet-SSD-windows # if this doesn't work you will need to install git.
 cd MobileNet-SSD-windows\scripts
 activate python3.5_environment
-build_win.cmd # verify that -DCUDNN_ROOT pointing to the correct place
-# make sure to remove the build folder before trying again in event of a hiccups
+build_win.cmd
+# verify that -DCUDNN_ROOT pointing to the correct place
+# make sure to remove the build folder before trying again in event of a hiccup
 ```
 
 5. Get a coffee and wait till the build is complete
 6. After its done clone this repository
 
 <!--
+``` -->
 ### Run Docker Environment
 **This section is optional:**
 **If you have Caffe-SSD with GPU (CUDA) installed in your Ubuntu machine you can skip the following steps and go directly to File Structure in section 5.**
 
-We use Docker to build the Caffe-ssd environment. However, you will need to install Docker with GPU support (Cuda) before you can build the docker image. You can find a helpful procedure to install Docker/Cuda on Ubuntu-18.04 OS [here](https://confluencecommercial.flir.com/display/IISRT/Installation+guide+for+Docker-ce%2C+Cuda+and+Nvidia-drivers).
+We use Docker to build the Caffe-ssd environment. However, you will need to install Docker with GPU support (Cuda) before you can build the docker image.
+Theres a useful shell script in the docker folder that attempts to install the needed prerequisites.
 
 We tested the environment with the following host machine setup:
-- Ubuntu 18.04.
-- Cuda 10.0/Cudnn 7.
+- Ubuntu 20.04.
+- Cuda 11.4/Cudnn 8.
 - Docker-ce 19.03.12.
-- Nvidia GeForce GTX 1080 GPU.
+- Nvidia GeForce GTX 1080, RTX2070s RTX2080s, RTX3090
 
-This command will pull the docker caffe-ssd image `asigiuk/caffe-ssd_devel:latest` and run a docker container with the following environment settings:
+This command will pull the docker caffe-ssd image `workingtaechqie/caffe-ssd-bionic-devel:20210713` and run a docker container with the following environment settings:
   - Caffe-SSD
-  - Opencv-3.4.3
-  - CUDA-8/CUDNN-7 GPU drive support.
+  - Opencv-3.4
+  - CUDA-10.2/CUDNN-7 GPU drive support.
 
 ```bash
-cd docker/
-docker run --gpus all --rm -it --name caffe-env-1  -e DISPLAY=${DISPLAY}  --net=host  --privileged --shm-size=2g --ulimit memlock=-1 --ulimit stack=67108864  -v /dev:/dev -v path/to/host_target_directory:/home/docker asigiuk/caffe-ssd_devel:latest
+docker run --gpus all --rm -it --name caffe-env-1  -e DISPLAY=${DISPLAY}  --net=host  --privileged --shm-size=2g --ulimit memlock=-1 --ulimit stack=67108864  -v /dev:/dev -v path/to/host_target_directory:/home/docker workingtaechqie/caffe-ssd-bionic-devel:20210713
 ```
 
 Important Notes:
@@ -61,7 +65,6 @@ Important Notes:
 Confirm correct caffe-ssd build by running the following command inside the caffe-ssd docker container environment.
 ```bash
 make /opt/caffe/runtest
-``` -->
 
 ## File Structure
 This provides an overview of your file structure expectations. Place your files in the following fashion to work with the scripts provided in this tutorial.
@@ -263,4 +266,3 @@ class3
 The label file can be found at: "IIS_Object_Detection/template/\<label_file\>.txt".
 
 Right click SpinView, select "Configure Inference Label", and Browse to the label file, click "Apply". Now, enable inference, and stream the camera. You should be able to have Firefly-DL camera localizing QR code now.
-
