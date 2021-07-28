@@ -69,6 +69,7 @@ make /opt/caffe/runtest
 ## File Structure
 This provides an overview of your file structure expectations. Place your files in the following fashion to work with the scripts provided in this tutorial.
 
+```
 Below is the expected dataset structure.
 ```
 DATASETS     
